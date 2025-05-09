@@ -1,73 +1,32 @@
-// Get elements
-const studentForm = document.getElementById('studentForm');
-const studentsList = document.getElementById('students');
-const nameInput = document.getElementById('name');
-const ageInput = document.getElementById('age');
-const courseInput = document.getElementById('course');
+// Populate birth year options
+const birthYearSelect = document.getElementById('birthYear');
+const currentYear = new Date().getFullYear();
 
-// Data storage for students
-let students = [];
-
-// Add a new student
-function addStudent(event) {
-    event.preventDefault();
-
-    const name = nameInput.value.trim();
-    const age = ageInput.value.trim();
-    const course = courseInput.value.trim();
-
-    if (!name || !age || !course) {
-        alert("All fields are required!");
-        return;
-    }
-
-    const student = {
-        id: Date.now(),
-        name,
-        age,
-        course
-    };
-
-    students.push(student);
-    displayStudents();
-    studentForm.reset();
+for (let year = currentYear; year >= 1940; year--) {
+  const option = document.createElement('option');
+  option.value = year;
+  option.textContent = year;
+  birthYearSelect.appendChild(option);
 }
 
-// Delete a student
-function deleteStudent(id) {
-    students = students.filter(student => student.id !== id);
-    displayStudents();
+function calculateAge() {
+  const year = parseInt(document.getElementById('birthYear').value);
+  const month = parseInt(document.getElementById('birthMonth').value);
+  const today = new Date();
+  let age = today.getFullYear() - year;
+
+  if (today.getMonth() + 1 < month) {
+    age -= 1; // Adjust if birthday hasn't occurred yet this year
+  }
+
+  let message = '';
+  if (age < 10) {
+    message = `👶 You're just ${age} years old! So much ahead!`;
+  } else if (age < 13) {
+    message = `🌟 You're ${age}! Ready to become a STEM star!`;
+  } else {
+    message = `🚀 You're ${age} years awesome and counting!`;
+  }
+
+  document.getElementById('resultArea').innerHTML = message;
 }
-
-// Edit a student
-function editStudent(id) {
-    const student = students.find(student => student.id === id);
-    if (student) {
-        nameInput.value = student.name;
-        ageInput.value = student.age;
-        courseInput.value = student.course;
-        deleteStudent(id);
-    }
-}
-
-// Display the list of students
-function displayStudents() {
-    studentsList.innerHTML = '';
-    students.forEach(student => {
-        const studentItem = document.createElement('li');
-        studentItem.innerHTML = `
-            <span>${student.name} - Age: ${student.age}, Course: ${student.course}</span>
-            <div>
-                <button class="edit" onclick="editStudent(${student.id})">Edit</button>
-                <button class="delete" onclick="deleteStudent(${student.id})">Delete</button>
-            </div>
-        `;
-        studentsList.appendChild(studentItem);
-    });
-}
-
-// Event listener for the form submission
-studentForm.addEventListener('submit', addStudent);
-
-// Initial display of students
-displayStudents();
